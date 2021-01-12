@@ -1,0 +1,183 @@
+<style>
+#customers {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  
+}
+  .image{
+    width: 100px;
+  }
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"
+  integrity="sha512-zT3zHcFYbQwjHdKjCu6OMmETx8fJA9S7E6W7kBeFxultf75OPTYUJigEKX58qgyQMi1m1EgenfjMXlRZG8BXaw=="
+  crossorigin="anonymous"
+></script>
+
+
+
+<div style="padding: 5rem" id="root"></div>
+
+<script id="entry-template" type="text/x-handlebars-template">
+{% raw %}
+    <table id="customers">
+      <tr>
+        <th>Image</th>
+        <th>Title</th>
+        <th>quantity</th>
+        <th>Price</th>
+        <th>Remove
+        </th>
+      </tr>
+      {{#items}}
+      <tr>
+        <td> <img class="image" src="{{ image }}" alt=""> </td>
+        <td>{{ title }} </td>
+        <td>
+        <div>
+            <button class="decrement_qty">
+              -
+            </button>
+
+            <input name="qty" size="4" value="1" />
+
+            <button class="increment_qty">
+              +
+            </button>
+          </div>
+  		</td>
+        <td>{{ price }}</td>
+        <td>
+          <a href="" data-id="{{ variant_id }}" id="cart_remove" class="remove-item" title="Remove Item">Remove</a>
+        </td>
+      </tr>
+       {{/items}}
+
+     </table>
+    {% endraw %} 
+</script>
+
+<script type="text/javascript">
+  function cartBuilds(){
+    var source = document.getElementById("entry-template").innerHTML;
+    var template = Handlebars.compile(source);
+
+    $.ajax({
+      type: 'GET',
+      url: '/cart.js',
+      dataType: 'json',
+      success: function(res) {
+        items = res.items;
+        new_item = {
+          items: []
+        }
+        
+        $.each(items, (i, e) => {
+          item = {
+            id: e.id,
+            title: e.title,
+            image: e.image,
+            price: e.price,
+            quantity: e.quantity,
+            variant_id: e.variant_id
+          };
+          new_item.items.push(item)
+          var html = template(new_item);
+          document.getElementById("root").innerHTML = html;
+        });
+      },
+      error: function(xhr, status, error) {
+        var err =xhr.responseText
+        console.log(err);
+        console.log(error);
+      }
+
+    });
+  }
+   cartBuilds();
+  function cartRemove() {
+    $(document).on('click', '.remove-item', function(e) {
+      var $this =$(this);
+      e.preventDefault();
+      var productId = parseInt($(this).attr('data-id'));
+      console.log("product ID",productId)
+      console.log("Hello")
+      $.ajax({
+        type: 'POST',
+        url: '/cart/change.js',
+        dataType: 'json',
+        data: {
+          quantity: 0,
+          id: productId
+        },
+        success: function(res) {
+          
+          console.log("response:","cart remove", res)
+          cartBuilds();
+        },
+        error: function(xhr, status, error) {
+          var err =xhr.responseText
+          console.log(err);
+          console.log(error);
+        }
+      });
+    });
+  }
+  console.log("run")
+
+  cartRemove()
+  
+  $(document).on('click', '.increment_qty', function(){
+    var oldVal = $(this).parent().find("input").val()
+    console.log(oldVal)
+    if ( parseFloat(oldVal) >= 1 ) {
+      var newVal = parseFloat(oldVal) + 1;
+      $(this).parent().find("input").val(newVal);
+    }
+    
+  })
+  
+  $(document).on('click', '.decrement_qty', function(){
+    var oldVal = $(this).parent().find("input").val();
+    if ( parseFloat(oldVal) >= 2 ) {
+      var newVal = parseFloat(oldVal) - 1;
+      $(this).parent().find("input").val(newVal);
+    }
+  })
+
+  
+</script>
+
+
+
+
+
+{% schema %}
+  {
+    "name": "cart",
+    "settings": []
+  }
+{% endschema %}
+
