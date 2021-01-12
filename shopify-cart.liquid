@@ -57,11 +57,11 @@
         <td>{{ title }} </td>
         <td>
         <div>
-            <button class="decrement_qty">
+            <button data-field="quantity" class="decrement_qty">
               -
             </button>
 
-            <input name="qty" size="4" value="1" />
+            <input class="quan" data-field="quantity" var-id="{{ variant_id }}" name="quantity" size="10" value="{{ quantity }}" />
 
             <button class="increment_qty">
               +
@@ -149,24 +149,89 @@
 
   cartRemove()
   
-  $(document).on('click', '.increment_qty', function(){
-    var oldVal = $(this).parent().find("input").val()
-    console.log(oldVal)
-    if ( parseFloat(oldVal) >= 1 ) {
-      var newVal = parseFloat(oldVal) + 1;
-      $(this).parent().find("input").val(newVal);
-    }
+//   $(document).on('click', '.increment_qty', function(){
+//     var oldVal = $(this).parent().find("input").val()
+//     if ( parseFloat(oldVal) >= 1 ) {
+//       var newVal = parseFloat(oldVal) + 1;
+//       $(this).parent().find("input").val(newVal);
+//     }
     
-  })
+//   })
   
-  $(document).on('click', '.decrement_qty', function(){
-    var oldVal = $(this).parent().find("input").val();
-    if ( parseFloat(oldVal) >= 2 ) {
-      var newVal = parseFloat(oldVal) - 1;
-      $(this).parent().find("input").val(newVal);
-    }
-  })
+//   $(document).on('click', '.decrement_qty', function(){
+//     var oldVal = $(this).parent().find("input").val();
+//     if ( parseFloat(oldVal) >= 2 ) {
+//       var newVal = parseFloat(oldVal) - 1;
+//       $(this).parent().find("input").val(newVal);
+//     }
+//   })
 
+  
+  function incrementQuantity() {
+    $(document).on('click', '.increment_qty', function(e) {
+      console.log("Hello")
+      e.preventDefault();
+      var currentVal = parseInt($(this).siblings('.quan').val());
+      var productId = parseInt($(this).siblings('.quan').attr('var-id'));
+      
+      console.log("varid", productId)
+      $.ajax({
+        type: 'POST',
+        url: '/cart/change.js',
+        dataType: 'json',
+        data: {
+          quantity: currentVal + 1,
+          id: productId
+        },
+        success: function(res) {
+          console.log("response:", res)
+          cartBuilds();
+        },
+        error: function(xhr, status, error) {
+          var err =xhr.responseText
+          console.log(err);
+          console.log(error);
+        }
+      });
+
+
+    });
+
+  }
+  function decrementQuantity() {
+    $(document).on('click', '.decrement_qty', function(e) {
+      console.log("Hello")
+      e.preventDefault();
+      var currentVal = parseInt($(this).siblings('.quan').val());
+      var productId = parseInt($(this).siblings('.quan').attr('var-id'));
+      
+      console.log("varid", productId)
+      $.ajax({
+        type: 'POST',
+        url: '/cart/change.js',
+        dataType: 'json',
+        data: {
+          quantity: currentVal - 1,
+          id: productId
+        },
+        success: function(res) {
+
+          console.log("response:", res)
+          cartBuilds();
+        },
+        error: function(xhr, status, error) {
+          var err =xhr.responseText
+          console.log(err);
+          console.log(error);
+        }
+      });
+
+
+    });
+
+  }
+  incrementQuantity();
+  decrementQuantity();
   
 </script>
 
