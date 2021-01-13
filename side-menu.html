@@ -4,8 +4,73 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style type="text/css">
+       #mainbox {
+           font-size: 24px;
+           cursor: pointer;
+       }
+      .sidemenu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0px;
+        background-color: black;
+        z-index: 1;
+        padding-top: 100px;
+        overflow-x: hidden;
+        transition: all 0.6s;
+      }
+      .sidemenu a {
+        padding: 8px 8px 8px 64px;
+        text-decoration: none;
+        font-size: 20px;
+        color: #999;
+        display: block;
+      }
+      .sidemenu a:hover {
+        color: white;
+      }
+      .sidemenu .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 32px;
+      }
+    </style>
   </head>
-  <body>
-    Hello
+  <body onclick="closeFunction()">
+      <div id="mainbox" onclick="openFunction()">&#9776 open</div>
+    <div class="sidemenu" id="menu">
+      <a href="">Home</a>
+      <a href="">About</a>
+      <a href="">Login</a>
+      <a href="" class="closebtn" onclick="closeFunction()">&times;</a>
+
+    </div>
+    <div id="bod" style="margin: 200px">
+      <button onclick="openFunction()" class="btn">Open</button>
+      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+    </div>
+    
+
+    <script type="text/javascript">
+    const openFunction =() =>{
+        document.getElementById("menu").style.width="300px"
+        document.getElementById("mainbox").style.marginLeft="300px"
+        document.getElementById("mainbox").innerHTML = "Click on cross"
+        document.getElementById("bod").style.marginLeft = "400px"
+        document.getElementById("bod").style.opacity = "0.1"
+    }
+    
+    const closeFunction = () => {
+        document.closeFunction("menu").style.width="0px"
+        document.getElementById("mainbox").style.marginLeft="0px"
+        document.getElementById("mainbox").innerHTML = "&#9776; Open"
+    }
+
+    
+    </script>
   </body>
 </html>
